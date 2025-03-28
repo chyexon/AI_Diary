@@ -1,0 +1,7 @@
+1.  pubspec.yaml 파일 여기있는걸로 교체하고 
+    터미널에     flutter pub get   입력
+
+
+
+2.  앱키변경
+  final String apiKey = '교수님이 카톡에 주신 지피티 키';
