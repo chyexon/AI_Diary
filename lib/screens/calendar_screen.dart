@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'event.dart';
 import 'detail_screen.dart';
-import 'graph_screen.dart'; // 🔹 그래프 화면 import 추가
+import 'graph_screen.dart';    // 🔹 그래프 화면 import
+import 'setting_screen.dart'; // 🔧 설정 화면 import
 
 class CalendarScreen extends StatefulWidget {
   @override
@@ -24,11 +25,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
         title: const Text('다이어리 달력'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.bar_chart), // 🔹 그래프 아이콘
+            icon: const Icon(Icons.bar_chart), // 📊 그래프 버튼
+            tooltip: '그래프 보기',
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => GraphScreen()), // 🔹 이동
+                MaterialPageRoute(builder: (context) => GraphScreen()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings), // ⚙️ 설정 버튼
+            tooltip: '설정',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => SettingScreen()),
               );
             },
           ),
@@ -53,8 +65,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
             ),
             selectedDayPredicate: (day) => isSameDay(day, selectedDay),
             eventLoader: _getEventsForDay,
-
-            // 🔹 날짜 칸에 일정 제목 + 시간 표시
             calendarBuilders: CalendarBuilders(
               markerBuilder: (context, date, eventsList) {
                 if (eventsList.isNotEmpty) {
@@ -83,7 +93,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 }
               },
             ),
-
             onDaySelected: (selectedDay, focusedDay) {
               setState(() {
                 this.selectedDay = selectedDay;
