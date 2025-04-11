@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'event.dart';
 import 'detail_screen.dart';
+import 'graph_screen.dart'; // 🔹 그래프 화면 import 추가
 
 class CalendarScreen extends StatefulWidget {
   @override
@@ -19,7 +20,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('다이어리 달력')),
+      appBar: AppBar(
+        title: const Text('다이어리 달력'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bar_chart), // 🔹 그래프 아이콘
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => GraphScreen()), // 🔹 이동
+              );
+            },
+          ),
+        ],
+      ),
       body: Column(
         children: [
           TableCalendar(
@@ -40,7 +54,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             selectedDayPredicate: (day) => isSameDay(day, selectedDay),
             eventLoader: _getEventsForDay,
 
-            // 🔹 날짜 칸에 일정 제목 + 시작시간 ~ 종료시간 표시
+            // 🔹 날짜 칸에 일정 제목 + 시간 표시
             calendarBuilders: CalendarBuilders(
               markerBuilder: (context, date, eventsList) {
                 if (eventsList.isNotEmpty) {
@@ -52,7 +66,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       ...eventsList.take(2).map((e) {
-                        Event event = e as Event; // 🔹 Event 타입으로 변환
+                        Event event = e as Event;
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 2),
                           child: Text(
@@ -115,4 +129,3 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return day1.year == day2.year && day1.month == day2.month && day1.day == day2.day;
   }
 }
-
