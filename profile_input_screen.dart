@@ -101,7 +101,27 @@ class _ProfileInputScreenState extends State<ProfileInputScreen> {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // 모든 필드가 채워졌는지 확인
+                  final mbti = mbtiController.text.trim().toUpperCase();
+
+                  final validMbtiList = [
+                    'INTJ',
+                    'INTP',
+                    'ENTJ',
+                    'ENTP',
+                    'INFJ',
+                    'INFP',
+                    'ENFJ',
+                    'ENFP',
+                    'ISTJ',
+                    'ISFJ',
+                    'ESTJ',
+                    'ESFJ',
+                    'ISTP',
+                    'ISFP',
+                    'ESTP',
+                    'ESFP',
+                  ];
+
                   if (nameController.text.isEmpty ||
                       mbtiController.text.isEmpty ||
                       selectedYear == null ||
@@ -109,6 +129,13 @@ class _ProfileInputScreenState extends State<ProfileInputScreen> {
                       selectedDay == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('모든 항목을 입력하세요!')),
+                    );
+                    return;
+                  }
+
+                  if (!validMbtiList.contains(mbti)) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('올바른 MBTI 유형을 입력하세요.')),
                     );
                     return;
                   }
