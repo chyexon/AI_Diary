@@ -1,0 +1,24 @@
+/* 
+
+
+아이콘 버튼 calelndar_screen.dart 에 추가
+
+
+*/
+
+
+IconButton(
+  icon: const Icon(Icons.bar_chart), // 📊 그래프 버튼
+  tooltip: '그래프 보기',
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => GraphScreen(
+          selectedDate: selectedDay, // 선택된 날짜를 그래프 화면으로 전달
+        ),
+      ),
+    );
+  },
+),
+ 
