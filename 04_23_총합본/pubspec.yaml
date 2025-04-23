@@ -1,0 +1,45 @@
+name: flutter_application_1
+description: "A new Flutter project."
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.3.0
+  table_calendar: ^3.0.9
+  cupertino_icons: ^1.0.8
+  shared_preferences: ^2.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  fonts:
+    - family: CookieRun
+      fonts:
+        - asset: assets/fonts/CookieRun_Bold.ttf
+    - family: Bazzi
+      fonts:
+        - asset: assets/fonts/Bazzi.ttf
+    - family: Maplestory_Light
+      fonts:
+        - asset: assets/fonts/Maplestory_Light.ttf
+    - family: Highschool
+      fonts:
+        - asset: assets/fonts/Highschool.ttf
+    - family: BMYEONSUNG
+      fonts:
+        - asset: assets/fonts/BMYEONSUNG.ttf
+    - family: Highlight_pen
+      fonts:
+        - asset: assets/fonts/Highlight_pen.ttf
+        

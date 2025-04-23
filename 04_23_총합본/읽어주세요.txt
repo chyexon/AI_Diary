@@ -1,0 +1,9 @@
+통합 안된것
+-gpt대화기능
+-그래프 최신 화면
+
+
+assets , lib 폴더
+pubspec.yaml 모두 
+
+flutter_application_1 (파일 많은 그 경로)에 복붙하면 됨
