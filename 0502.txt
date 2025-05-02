@@ -1,5 +1,0 @@
-0502
-profile_input_screen.dart
-calendar_screen.dart
-setting_screen.dart
-event_edit.dart 추가!
