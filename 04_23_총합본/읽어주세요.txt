@@ -29,3 +29,12 @@ flutter_application_1\lib\screens
 
 
 2. flutter pub get cmd에 입력하기
+
+
+
+------------------------------------
+5월 2일 그래프 변경
+graph_screen.dart
+calender_screen.dart
+pubspec.yaml
+파일 수정
