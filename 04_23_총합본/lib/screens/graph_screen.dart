@@ -1,112 +1,117 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class GraphScreen extends StatefulWidget {
+  final DateTime selectedDate;
+  GraphScreen({required this.selectedDate});
+
   @override
   _GraphScreenState createState() => _GraphScreenState();
 }
 
 class _GraphScreenState extends State<GraphScreen> {
-  DateTime startDate = DateTime(2025, 3, 1);
-  DateTime endDate = DateTime(2025, 3, 30);
+  late DateTimeRange selectedDateRange;
+  late List<double> dataPoints;
 
-  String formatDate(DateTime date) {
-    return DateFormat('yy.MM.dd').format(date);
+  @override
+  void initState() {
+    super.initState();
+    final firstDay = DateTime(widget.selectedDate.year, widget.selectedDate.month, 1);
+    final lastDay = DateTime(widget.selectedDate.year, widget.selectedDate.month + 1, 0);
+    selectedDateRange = DateTimeRange(start: firstDay, end: lastDay);
+    dataPoints = List.generate(
+      selectedDateRange.end.day - selectedDateRange.start.day + 1,
+      (i) => (i + 1) * 2.5,
+    );
   }
 
-  Future<void> selectDate(BuildContext context, bool isStart) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: isStart ? startDate : endDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isStart) {
-          startDate = picked;
-        } else {
-          endDate = picked;
-        }
-      });
-    }
+  void updateGraphData(DateTimeRange range) {
+    setState(() {
+      selectedDateRange = range;
+      dataPoints = List.generate(
+        range.end.day - range.start.day + 1,
+        (i) => (i + 1) * 2.5,
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('일정 통계 그래프')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('그래프', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            const Text('날짜를 입력해주세요.'),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () => selectDate(context, true),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[700],
-                    foregroundColor: Colors.white,
-                  ),
-                  child: Text(formatDate(startDate)),
-                ),
-                const SizedBox(width: 8),
-                const Text('~'),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: () => selectDate(context, false),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[700],
-                    foregroundColor: Colors.white,
-                  ),
-                  child: Text(formatDate(endDate)),
-                ),
-              ],
+      appBar: AppBar(
+        title: const Text('그래프 보기'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.date_range),
+            tooltip: '날짜 범위 선택',
+            onPressed: () async {
+              final range = await showDateRangePicker(
+                context: context,
+                firstDate: DateTime(2000),
+                lastDate: DateTime(2100),
+                initialDateRange: selectedDateRange,
+              );
+              if (range != null) updateGraphData(range);
+            },
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              '범위: ${selectedDateRange.start.month}/${selectedDateRange.start.day} - '
+              '${selectedDateRange.end.month}/${selectedDateRange.end.day}',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 24),
-            const Text('기분을 확인하세요'),
-            const SizedBox(height: 8),
-            Container(
-              width: double.infinity,
-              height: 200,
-              color: Colors.grey[300],
-              child: CustomPaint(
-                painter: LineGraphPainter(),
+          ),
+          Expanded(
+            child: LineChart(
+              LineChartData(
+                gridData: FlGridData(show: false),
+                titlesData: FlTitlesData(
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      interval: 1,
+                      getTitlesWidget: (double value, TitleMeta meta) {
+                        final date = selectedDateRange.start.add(Duration(days: value.toInt()));
+                        return SideTitleWidget(
+                          axisSide: meta.axisSide,
+                          child: Text('${date.day}일', style: TextStyle(fontSize: 10)),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                borderData: FlBorderData(show: false),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: dataPoints
+                        .asMap()
+                        .entries
+                        .map((e) => FlSpot(e.key.toDouble(), e.value))
+                        .toList(),
+                    isCurved: true,
+                    belowBarData: BarAreaData(show: true),
+                    dotData: FlDotData(show: false),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
-}
-
-class LineGraphPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.black
-      ..strokeWidth = 2;
-
-    final points = [
-      Offset(0, size.height * 0.6),
-      Offset(size.width * 0.2, size.height * 0.4),
-      Offset(size.width * 0.4, size.height * 0.5),
-      Offset(size.width * 0.6, size.height * 0.7),
-      Offset(size.width * 0.8, size.height * 0.45),
-      Offset(size.width, size.height * 0.6),
-    ];
-
-    for (int i = 0; i < points.length - 1; i++) {
-      canvas.drawLine(points[i], points[i + 1], paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
