@@ -49,20 +49,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
               );
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.bar_chart), // 📊 그래프 버튼
-           tooltip: '그래프 보기',
-            onPressed: () {
-            Navigator.push(
-            context,
-             MaterialPageRoute(
-             builder: (context) => GraphScreen(
-             selectedDate: selectedDay, // 선택된 날짜를 그래프 화면으로 전달
-        ),
-      ),
-    );
-  },
-),
         ],
       ),
       body: Column(
