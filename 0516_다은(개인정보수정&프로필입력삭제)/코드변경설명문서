@@ -1,9 +1,0 @@
-profile_edit.dart 추가 (screens 파일 아래에!)
-
-setting_screen.dart 수정(45번째 줄 쯤
-onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfileEditScreen()), 추가)
-
-calendar_screen.dart 수정(30번째 줄에 automaticallyImplyLeading: false, << 이거 추가하면 됨)
