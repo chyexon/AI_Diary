@@ -6,7 +6,7 @@ import '../models/user_profile.dart';
 class ApiService {
  Future<String> getGPTResponse(String prompt) async {
   const String apiUrl = 'https://api.openai.com/v1/chat/completions';
-  const String apiKey = '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'; // 실제 키로 교체
+  const String apiKey = '';
 
   try {
     String userInfo = '';
