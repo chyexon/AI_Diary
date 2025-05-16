@@ -63,6 +63,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false, 
         title: const Text('다이어리 달력'),
         actions: [
           IconButton(
