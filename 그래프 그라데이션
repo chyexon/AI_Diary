@@ -6,14 +6,18 @@ LineChartBarData(
     FlSpot(3, 5),
   ],
   isCurved: true,
+  
+  // ✅ 선 색상: 블루 → 민트 그라데이션
   gradient: LinearGradient(
     colors: [
-      Color(0xff23b6e6), // 파란색
-      Color(0xff02d39a), // 민트색
+      Color(0xff23b6e6), // 밝은 블루
+      Color(0xff02d39a), // 민트
     ],
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
   ),
+
+  // ✅ 선 아래 영역: 반투명 블루톤 그라데이션 (감성적 분위기 강조)
   belowBarData: BarAreaData(
     show: true,
     gradient: LinearGradient(
@@ -25,4 +29,12 @@ LineChartBarData(
       end: Alignment.bottomCenter,
     ),
   ),
+
+  // ✅ 꺾은선 스타일: 부드러운 곡선 그래프
+  isStrokeCapRound: true,
+
+  // ✅ 확장 가능 기능:
+  // - 감정에 따라 선 색상 바꾸기: (예: 기쁨 → 노랑, 슬픔 → 블루 등)
+  // - 다크 모드 대응: LinearGradient 색상에 Theme.of(context).brightness 적용
+  // - 터치 시 강조 효과 추가: touchData 설정
 )
