@@ -1,0 +1,8 @@
+gpt응답+감정저장+그래프표현 기능만있음  
+
+dependencies추가하기
+
+shared_preferences: ^2.2.2
+fl_chart: ^0.65.0
+
+
