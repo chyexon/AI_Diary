@@ -184,7 +184,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   ],
                 ),
                 child: Text(
-                  'GPT의 답변:\n$_gptResponse',
+                  '답변:\n$_gptResponse',
                   style: const TextStyle(fontSize: 16),
                 ),
               ),
