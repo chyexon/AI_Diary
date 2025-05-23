@@ -5,7 +5,7 @@ import 'dart:convert';
 
 class ApiService {
   final String apiUrl = 'https://api.openai.com/v1/chat/completions';
-  final String apiKey = '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';
+  final String apiKey = '앱키';
 
   Future<Map<String, dynamic>> getGPTResponse(String prompt) async {
     try {
@@ -23,7 +23,7 @@ class ApiService {
               'content':
                   '당신은 사용자의 메시지를 읽고, 텍스트에 반응한 후 감정을 분석하여 감정에 맞는 음악을 추천하는 어시스턴트입니다. '
                   '사용자가 직접 요청하지 않아도 매번 마지막 감정에 어울리는 음악을 추천하세요. '
-                  '그리고 사용자의 감정을 -50~50 범위의 정수로 분석하세요. '
+                  '그리고 사용자의 감정을 1부터 5 범위의 정수로 분석하세요. 숫자가 낮을수록 부정의 감정입니다 '
                   '응답 맨 앞에 다음 형식으로 감정 점수를 명시하세요: 감정점수: [정수]'
             },
             {'role': 'user', 'content': prompt},

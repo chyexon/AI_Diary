@@ -40,40 +40,98 @@ class _LineChartPageState extends State<LineChartPage> {
             ? Center(child: Text('저장된 감정 점수가 없습니다.'))
             : LineChart(
                 LineChartData(
-                  gridData: FlGridData(show: true), // 눈금선은 보임
+                  minY: 0.5,
+                  maxY: 5.5,
+                  gridData: FlGridData(show: false),
                   titlesData: FlTitlesData(
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        getTitlesWidget: (value, meta) => SizedBox.shrink(),
+                        interval: 0.5,
+                        reservedSize: 90,
+                        getTitlesWidget: (value, meta) {
+                          final emojis = [
+                            'assets/images/emoji1.png',
+                            'assets/images/emoji2.png',
+                            'assets/images/emoji3.png',
+                            'assets/images/emoji4.png',
+                            'assets/images/emoji5.png',
+                          ];
+                          if (value >= 1 &&
+                              value <= 5 &&
+                              value == value.toInt()) {
+                            return Image.asset(
+                              emojis[value.toInt() - 1],
+                              width: 40,
+                              height: 40,
+                            );
+                          } else if (value == 0.7 || value == 5.3) {
+                            return SizedBox(height: 20);
+                          }
+                          return SizedBox.shrink();
+                        },
                       ),
                     ),
                     rightTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) => SizedBox.shrink(),
-                      ),
+                      sideTitles: SideTitles(showTitles: false),
                     ),
                     topTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) => SizedBox.shrink(),
-                      ),
+                      sideTitles: SideTitles(showTitles: false),
                     ),
                     bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) => SizedBox.shrink(),
-                      ),
+                      sideTitles: SideTitles(showTitles: false),
                     ),
                   ),
                   borderData: FlBorderData(show: true),
+                  lineTouchData: LineTouchData(
+                    touchTooltipData: LineTouchTooltipData(
+                       tooltipBgColor: Colors.transparent,
+                      getTooltipItems: (touchedSpots) {
+                        return touchedSpots.map((spot) {
+                          // 점수에 따라 이모지 선택
+                          final emojiMap = {
+                            1: '😖',
+                            2: '🙁',
+                            3: '😐',
+                            4: '🙂',
+                            5: '😊',
+                          };
+                          final emoji = emojiMap[spot.y.toInt()] ?? '❓';
+                          return LineTooltipItem(
+                            emoji,
+                            const TextStyle(
+                              fontSize: 30,
+                            ),
+                          );
+                        }).toList();
+                      },
+                    ),
+                  ),
                   lineBarsData: [
                     LineChartBarData(
-                      isCurved: false,
-                      color: Colors.blue,
+                      isCurved: true,
+                      gradient: LinearGradient(
+                        colors: [
+                          Color(0xff23b6e6),
+                          Color(0xff02d39a),
+                        ],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
                       barWidth: 3,
+                      isStrokeCapRound: true,
                       dotData: FlDotData(show: true),
+                      belowBarData: BarAreaData(
+                        show: true,
+                        gradient: LinearGradient(
+                          colors: [
+                            Color(0xff23b6e6).withOpacity(0.3),
+                            Color(0xff02d39a).withOpacity(0.1),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
                       spots: spots,
                     ),
                   ],

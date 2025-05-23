@@ -29,4 +29,12 @@ class EmotionStorage {
     List<String> list = prefs.getStringList(_keyScoreList) ?? [];
     return list.map((e) => int.tryParse(e) ?? 0).toList();
   }
+
+  
+}
+
+Future<void> deleteEmotionScores() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.remove('emotion_score');
+  await prefs.remove('emotion_score_list');
 }

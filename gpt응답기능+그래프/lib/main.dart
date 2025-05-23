@@ -3,8 +3,10 @@ import 'chatgpt.dart';
 import 'emotion_storage.dart';
 import 'line_chart_page.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Flutter 엔진 초기화
+  await deleteEmotionScores();               // 로컬 저장소 초기화 함수 호출
+  runApp(MyApp());                           // 앱 실행
 }
 
 class MyApp extends StatelessWidget {
@@ -145,3 +147,5 @@ class _EmotionAppState extends State<EmotionApp> {
     );
   }
 }
+
+
