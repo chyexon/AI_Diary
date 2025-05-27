@@ -78,12 +78,20 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   }
 
   void _addEvent(Event newEvent) {
-    setState(() {
-      _events.add(newEvent);
-    });
-    widget.onEventAdded(newEvent);
-  }
+  bool isDuplicate = _events.any((event) =>
+      event.title == newEvent.title &&
+      event.startTime == newEvent.startTime &&
+      event.endTime == newEvent.endTime);
 
+  if (!isDuplicate) {
+    // _events에만 추가하면 다른 페이지 이동 후 사라짐
+    // → 반드시 부모에도 전달해야 저장 유지됨
+    widget.onEventAdded(newEvent); // 부모에게만 전달
+    setState(() {
+      _events.add(newEvent); // 화면에서 보여줄 목록에도 추가
+    });
+  }
+}
   Future<void> _navigateToAddEvent() async {
     final newEvent = await Navigator.push(
       context,
