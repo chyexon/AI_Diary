@@ -1,0 +1,5 @@
+chatgpt.dart
+detail_screen.dart
+pubspec.yaml
+calendar_screen.dart
+flutter_application_1 경로로 이동해 "flutter pub get" 명령어 실행
