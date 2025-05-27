@@ -1,1 +1,0 @@
-detail_screen.dart에 있는 사용자 일기 받아서 graph_gpt.dart 생성하여 해당 일기의 감정 분석 후 수치화한 것을 그래프에 적용
