@@ -10,5 +10,7 @@ gpt_screen.dart
 graph_screen.dart
 main.dart
 
+pubspec.yaml
+
 
 
