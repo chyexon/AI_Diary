@@ -14,7 +14,7 @@ dependencies:
   table_calendar: ^3.0.9
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.2.2
-  fl_chart: ^0.65.0         # ✅ 버전 업그레이드
+  fl_chart: ^0.65.0
   url_launcher: ^6.2.4
 
 dev_dependencies:
@@ -45,7 +45,7 @@ flutter:
       fonts:
         - asset: assets/fonts/Highlight_pen.ttf
 
-  assets:                   # ✅ assets 항목 추가
+  assets:
     - assets/images/emoji1.png
     - assets/images/emoji2.png
     - assets/images/emoji3.png
