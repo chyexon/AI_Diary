@@ -8,6 +8,7 @@ calendar_screen.dart
 chatgpt.dart
 gpt_screen.dart
 graph_screen.dart
+detail_screen.dart
 main.dart
 
 pubspec.yaml
