@@ -1,0 +1,9 @@
+1. pubsepc.yaml의 dependences: 밑에 있는 것들의 버전 (최신으로 모두 업그레이드)
+
+2. lib 경로 내 font_notifier.dart , main.dart
+(폰트 추가, dependences의 업그레이드로 인해 못쓰게된 메서드 바꿈으로 main.dart 코드 조금 수정)
+
+3. screens 의 font_setting_screen.dart, graph_screen.dart
+(2와 동일. 폰트 관련, 업그레이드로 인한 문제 해결)
+
+4. assets/font 내 새로운 폰트 2개 (고딕, 명조) 추가
