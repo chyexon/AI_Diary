@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'; 
 import 'package:fl_chart/fl_chart.dart';
 import 'emotion_storage.dart';
 
@@ -18,29 +18,21 @@ class _GraphScreenState extends State<GraphScreen> {
   @override
   void initState() {
     super.initState();
-    // 해당 월의 1일 ~ 말일을 기본 범위로 설정
     final firstDay = DateTime(widget.selectedDate.year, widget.selectedDate.month, 1);
     final lastDay = DateTime(widget.selectedDate.year, widget.selectedDate.month + 1, 0);
     selectedDateRange = DateTimeRange(start: firstDay, end: lastDay);
-
     _loadScores();
   }
 
-  /// 날짜별 점수 맵을 불러와서, 선택한 기간 내 날짜별로 점수가 없으면 0을 채워 넣는다.
   Future<void> _loadScores() async {
-    // 1) 저장소에서 전체 “날짜 → 점수” 맵을 불러온다.
     final Map<DateTime, int> storedMap = await EmotionStorage.loadEmotionScoreMap();
-
-    // 2) 선택한 날짜 범위(예: 5월 1일부터 5월 31일까지) 내 날짜 개수 계산
-    final int daysCount = selectedDateRange.duration.inDays + 1; // inclusive
+    final int daysCount = selectedDateRange.duration.inDays + 1;
     final DateTime startDate = selectedDateRange.start;
 
-    // 3) 그래프에 사용할 맵 초기화
     Map<DateTime, int> dateScoreMap = {};
 
     for (int i = 0; i < daysCount; i++) {
       final DateTime date = startDate.add(Duration(days: i));
-      // 저장된 맵에 날짜가 있으면 해당 점수, 없으면 0
       final int score = storedMap[date] ?? 0;
       dateScoreMap[date] = score;
     }
@@ -50,13 +42,11 @@ class _GraphScreenState extends State<GraphScreen> {
     });
   }
 
-  /// 사용자가 날짜 범위를 직접 변경했을 때 호출
   void updateGraphData(DateTimeRange range) {
     selectedDateRange = range;
     _loadScores();
   }
 
-  /// _dateScoreMap을 바탕으로 FlSpot 리스트를 만든다.
   List<FlSpot> _buildSpots() {
     final List<FlSpot> spots = [];
     int idx = 0;
@@ -75,9 +65,23 @@ class _GraphScreenState extends State<GraphScreen> {
   Widget build(BuildContext context) {
     final spots = _buildSpots();
 
+    final baseTheme = Theme.of(context);
+    final customTheme = baseTheme.copyWith(
+      colorScheme: baseTheme.colorScheme.copyWith(
+        primary: Color(0xFF8BC34A),   // 선택된 날짜 테두리 및 텍스트 색
+        onPrimary: Colors.black,
+        surface: Colors.white,        // 달력 배경색
+        onSurface: Colors.black,
+      ),
+      datePickerTheme: DatePickerThemeData(
+        rangeSelectionBackgroundColor: Color(0xFFE6F8D5), // 범위 사이 날짜 배경색
+         // 투명 오버레이
+      ),
+    );
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('이달의 감정 점수 그래프'),
+        title: Text('감정 점수 그래프'),
         actions: [
           IconButton(
             icon: Icon(Icons.date_range),
@@ -88,6 +92,12 @@ class _GraphScreenState extends State<GraphScreen> {
                 firstDate: DateTime(2000),
                 lastDate: DateTime(2100),
                 initialDateRange: selectedDateRange,
+                builder: (BuildContext context, Widget? child) {
+                  return Theme(
+                    data: customTheme,
+                    child: child!,
+                  );
+                },
               );
               if (picked != null) {
                 updateGraphData(picked);
@@ -98,7 +108,7 @@ class _GraphScreenState extends State<GraphScreen> {
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-        child: spots.isEmpty
+        child: spots.every((spot) => spot.y == 0)
             ? Center(child: Text('선택한 날짜 범위 내 데이터가 없습니다.'))
             : LineChart(
                 LineChartData(
@@ -112,7 +122,7 @@ class _GraphScreenState extends State<GraphScreen> {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        interval: 0.5,
+                        interval: 1,
                         reservedSize: 50,
                         getTitlesWidget: (value, meta) {
                           final emojis = [
@@ -130,10 +140,9 @@ class _GraphScreenState extends State<GraphScreen> {
                               width: 30,
                               height: 30,
                             );
-                          } else if (value == 0.7 || value == 5.3) {
-                            return SizedBox(height: 20);
+                          } else {
+                            return SizedBox.shrink();
                           }
-                          return SizedBox.shrink();
                         },
                       ),
                     ),
@@ -143,13 +152,18 @@ class _GraphScreenState extends State<GraphScreen> {
                         interval: 1,
                         reservedSize: 30,
                         getTitlesWidget: (double value, TitleMeta meta) {
-                          final day = selectedDateRange.start
-                              .add(Duration(days: value.toInt()))
-                              .day;
+                          if (value < 0 || value >= spots.length) {
+                            return SizedBox.shrink();
+                          }
+                          final score = spots[value.toInt()].y;
+                          if (score == 0) {
+                            return SizedBox.shrink();
+                          }
+                          final date = selectedDateRange.start.add(Duration(days: value.toInt()));
                           return SideTitleWidget(
                             axisSide: meta.axisSide,
                             child: Text(
-                              '$day일',
+                              '${date.month}/${date.day}',
                               style: TextStyle(fontSize: 10),
                             ),
                           );
@@ -169,6 +183,7 @@ class _GraphScreenState extends State<GraphScreen> {
                       tooltipBgColor: Colors.transparent,
                       getTooltipItems: (touchedSpots) {
                         return touchedSpots.map((spot) {
+                          if (spot.y == 0) return null;
                           final emojiMap = {
                             1: '😖',
                             2: '🙁',
@@ -179,9 +194,9 @@ class _GraphScreenState extends State<GraphScreen> {
                           final emoji = emojiMap[spot.y.toInt()] ?? '❓';
                           return LineTooltipItem(
                             emoji,
-                            TextStyle(fontSize: 30),
+                            TextStyle(fontSize: 24),
                           );
-                        }).toList();
+                        }).whereType<LineTooltipItem>().toList();
                       },
                     ),
                   ),
@@ -196,7 +211,10 @@ class _GraphScreenState extends State<GraphScreen> {
                       ),
                       barWidth: 3,
                       isStrokeCapRound: true,
-                      dotData: FlDotData(show: true),
+                      dotData: FlDotData(
+                        show: true,
+                        checkToShowDot: (spot, barData) => spot.y > 0,
+                      ),
                       belowBarData: BarAreaData(
                         show: true,
                         gradient: LinearGradient(
