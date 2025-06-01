@@ -148,26 +148,7 @@ class _GraphScreenState extends State<GraphScreen> {
                     ),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
-                        showTitles: true,
-                        interval: 1,
-                        reservedSize: 30,
-                        getTitlesWidget: (double value, TitleMeta meta) {
-                          if (value < 0 || value >= spots.length) {
-                            return SizedBox.shrink();
-                          }
-                          final score = spots[value.toInt()].y;
-                          if (score == 0) {
-                            return SizedBox.shrink();
-                          }
-                          final date = selectedDateRange.start.add(Duration(days: value.toInt()));
-                          return SideTitleWidget(
-                            axisSide: meta.axisSide,
-                            child: Text(
-                              '${date.month}/${date.day}',
-                              style: TextStyle(fontSize: 10),
-                            ),
-                          );
-                        },
+                        showTitles: false,  // x축 라벨 안 보이게 설정
                       ),
                     ),
                     rightTitles: AxisTitles(
@@ -180,7 +161,7 @@ class _GraphScreenState extends State<GraphScreen> {
                   borderData: FlBorderData(show: true),
                   lineTouchData: LineTouchData(
                     touchTooltipData: LineTouchTooltipData(
-                      tooltipBgColor: Colors.transparent,
+                      tooltipBgColor: Colors.transparent, // 툴팁 배경 투명
                       getTooltipItems: (touchedSpots) {
                         return touchedSpots.map((spot) {
                           if (spot.y == 0) return null;
@@ -192,9 +173,14 @@ class _GraphScreenState extends State<GraphScreen> {
                             5: '😊',
                           };
                           final emoji = emojiMap[spot.y.toInt()] ?? '❓';
+
+                          // 날짜 추가
+                          final date = selectedDateRange.start.add(Duration(days: spot.x.toInt()));
+                          final dateStr = '${date.month}월 ${date.day}일';
+
                           return LineTooltipItem(
-                            emoji,
-                            TextStyle(fontSize: 24),
+                            '$emoji\n$dateStr',
+                            TextStyle(fontSize: 16, color: Colors.black),
                           );
                         }).whereType<LineTooltipItem>().toList();
                       },
