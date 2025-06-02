@@ -164,6 +164,16 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     return match?.group(0);
   }
 
+  // 🔥 추천 음악 링크 열기 메서드 추가 🔥
+  Future<void> _launchYouTubeLink(String url) async {
+    final uri = Uri.parse(Uri.encodeFull(url));
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('링크를 열 수 없습니다')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final youTubeUrl = extractYouTubeLink(_gptResponse);
@@ -330,19 +340,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       const SizedBox(height: 12),
                       if (youTubeUrl != null)
                         GestureDetector(
-                          onTap: () async {
-                            final uri = Uri.parse(Uri.encodeFull(youTubeUrl));
-                            if (await canLaunchUrl(uri)) {
-                              await launchUrl(
-                                uri,
-                                mode: LaunchMode.externalApplication,
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('링크를 열 수 없습니다')),
-                              );
-                            }
-                          },
+                          onTap: () => _launchYouTubeLink(youTubeUrl),
                           child: const Text(
                             '[추천 음악 듣기]',
                             style: TextStyle(
