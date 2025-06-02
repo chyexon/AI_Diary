@@ -331,11 +331,15 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       if (youTubeUrl != null)
                         GestureDetector(
                           onTap: () async {
-                            final uri = Uri.parse(youTubeUrl);
+                            final uri = Uri.parse(Uri.encodeFull(youTubeUrl));
                             if (await canLaunchUrl(uri)) {
                               await launchUrl(
                                 uri,
-                                mode: LaunchMode.externalApplication, // 외부 앱으로 열기
+                                mode: LaunchMode.externalApplication,
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('링크를 열 수 없습니다')),
                               );
                             }
                           },
