@@ -62,13 +62,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     }
   }
 
-///////////////////////////
-///
-///세이브 다이어리 수정
-///
-///
-///
-///
   Future<void> _saveDiary() async {
     if (_diaryController.text.trim().isEmpty) return;
 
@@ -82,9 +75,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
     final apiService = ApiService();
     final Map<String, dynamic> result = await apiService.getGPTResponse(
-    input,
-    widget.selectedDate, // 여기가 핵심입니다
-  );
+      input,
+      widget.selectedDate,
+    );
     final gptReply = result['response'] ?? '';
 
     await prefs.setString('${key}_diary', input);
@@ -127,13 +120,12 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   void _showFullImage(Uint8List imageBytes) {
     showDialog(
       context: context,
-      builder:
-          (_) => Dialog(
-            child: GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: InteractiveViewer(child: Image.memory(imageBytes)),
-            ),
-          ),
+      builder: (_) => Dialog(
+        child: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: InteractiveViewer(child: Image.memory(imageBytes)),
+        ),
+      ),
     );
   }
 
@@ -179,7 +171,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '${widget.selectedDate.month}월 ${widget.selectedDate.day}일 일정',
+          '${widget.selectedDate.month}월 ${widget.selectedDate.day}일',
         ),
       ),
       body: SingleChildScrollView(
@@ -187,11 +179,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(
-                left: 16.0,
-                top: 16.0,
-                bottom: 8.0,
-              ),
+              padding: const EdgeInsets.only(left: 16.0, top: 16.0, bottom: 8.0),
               child: ElevatedButton(
                 onPressed: _navigateToAddEvent,
                 child: const Text('일정 추가'),
@@ -221,54 +209,49 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
-                          children:
-                              _selectedImageList.asMap().entries.map((entry) {
-                                int index = entry.key;
-                                Uint8List imageBytes = entry.value;
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: GestureDetector(
-                                    onTap: () => _showFullImage(imageBytes),
-                                    child: Stack(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            12.0,
-                                          ),
-                                          child: Image.memory(
-                                            imageBytes,
-                                            width: 120,
-                                            height: 120,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                        Positioned(
-                                          top: 4,
-                                          right: 4,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                _selectedImageList.removeAt(
-                                                  index,
-                                                );
-                                              });
-                                            },
-                                            child: CircleAvatar(
-                                              radius: 12,
-                                              backgroundColor: Colors.black54,
-                                              child: const Icon(
-                                                Icons.close,
-                                                color: Colors.white,
-                                                size: 16,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                          children: _selectedImageList.asMap().entries.map((entry) {
+                            int index = entry.key;
+                            Uint8List imageBytes = entry.value;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: GestureDetector(
+                                onTap: () => _showFullImage(imageBytes),
+                                child: Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      child: Image.memory(
+                                        imageBytes,
+                                        width: 120,
+                                        height: 120,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              }).toList(),
+                                    Positioned(
+                                      top: 4,
+                                      right: 4,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _selectedImageList.removeAt(index);
+                                          });
+                                        },
+                                        child: CircleAvatar(
+                                          radius: 12,
+                                          backgroundColor: Colors.black54,
+                                          child: const Icon(
+                                            Icons.close,
+                                            color: Colors.white,
+                                            size: 16,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }).toList(),
                         ),
                       ),
                   ],
@@ -287,10 +270,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       onTap: _isDiarySaved ? null : _pickImage,
                       borderRadius: BorderRadius.circular(24),
                       child: CircleAvatar(
-                        backgroundColor:
-                            _isDiarySaved
-                                ? Colors.grey.shade300
-                                : Colors.grey.shade200,
+                        backgroundColor: _isDiarySaved
+                            ? Colors.grey.shade300
+                            : Colors.grey.shade200,
                         child: Icon(
                           Icons.add_a_photo,
                           color: _isDiarySaved ? Colors.grey : Colors.black87,
@@ -315,10 +297,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             ),
             if (_gptResponse.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 8.0,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
@@ -338,12 +317,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       Text(
                         '답변:\n' +
                             _gptResponse
-                                .replaceAll(
-                                  RegExp(
-                                    r'https:\/\/www\.youtube\.com\/watch\?v=[\w-]+',
-                                  ),
-                                  '',
-                                )
+                                .replaceAll(RegExp(r'https:\/\/www\.youtube\.com\/watch\?v=[\w-]+'), '')
                                 .replaceAllMapped(
                                   RegExp(r'\[\s*([^\]]+?)\s*\]\(\s*\)'),
                                   (match) => match.group(1) ?? '',
@@ -373,21 +347,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                 ),
               ),
             const SizedBox(height: 8),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: _events.length,
-              itemBuilder: (context, index) {
-                final event = _events[index];
-                return ListTile(
-                  title: Text(event.title),
-                  subtitle: Text(
-                    '${event.startTime.hour}:${event.startTime.minute.toString().padLeft(2, '0')} - '
-                    '${event.endTime.hour}:${event.endTime.minute.toString().padLeft(2, '0')}',
-                  ),
-                );
-              },
-            ),
           ],
         ),
       ),
