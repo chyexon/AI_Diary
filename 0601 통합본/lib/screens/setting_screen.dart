@@ -31,7 +31,7 @@ class SettingScreen extends StatelessWidget {
           ),
 
           ListTile(
-            title: const Text('정보 수정'),
+            title: const Text('개인정보 수정'),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {
               Navigator.push(
