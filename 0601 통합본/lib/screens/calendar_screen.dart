@@ -1,15 +1,11 @@
-//calendar_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'event.dart';
 import 'detail_screen.dart';
 import 'graph_screen.dart';
 import 'setting_screen.dart';
-import 'event_edit.dart';
 import 'daily_question.dart';
 import 'daily_answer.dart';
-//import 'gpt_question.dart'; // <- GPT 함수 정의 파일 import
 
 class CalendarScreen extends StatefulWidget {
   @override
@@ -21,6 +17,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
   String? todayQuestion;
   bool isLoadingQuestion = true;
   Map<DateTime, List<Event>> events = {};
+
+  DateTime? _lastClickedDay;
+  DateTime? _lastClickedTime;
 
   @override
   void initState() {
@@ -161,72 +160,46 @@ class _CalendarScreenState extends State<CalendarScreen> {
               },
               markerBuilder: (context, date, eventsList) {
                 if (eventsList.isNotEmpty) {
-                  final eventList =
-                      eventsList.take(2).map((e) => e as Event).toList();
-
+                  final eventList = eventsList.take(2).map((e) => e as Event).toList();
                   return Align(
                     alignment: Alignment.bottomCenter,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      children:
-                          eventList.map((event) {
-                            return GestureDetector(
-                              onTap: () async {
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (_) => EventEditScreen(
-                                          event: event,
-                                          onSave: (updatedEvent) {
-                                            setState(() {
-                                              final dateKey = getDateOnly(date);
-                                              final index = events[dateKey]!
-                                                  .indexOf(event);
-                                              events[dateKey]![index] =
-                                                  updatedEvent;
-                                            });
-                                          },
-                                          onDelete: () {
-                                            setState(() {
-                                              final dateKey = getDateOnly(date);
-                                              events[dateKey]!.remove(event);
-                                              if (events[dateKey]!.isEmpty) {
-                                                events.remove(dateKey);
-                                              }
-                                            });
-                                          },
-                                        ),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(vertical: 1),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 4,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color.fromARGB(
-                                    255,
-                                    255,
-                                    238,
-                                    169,
-                                  ),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  event.title,
-                                  style: const TextStyle(
-                                    fontSize: 8,
-                                    color: Colors.black,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
+                      children: eventList.map((event) {
+                        return GestureDetector(
+                          onTap: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => EventDetailScreen(
+                                  selectedDate: getDateOnly(date),
+                                  events: _getEventsForDay(date),
+                                  onEventAdded: (newEvent) {
+                                    setState(() {
+                                      final dateKey = getDateOnly(date);
+                                      events.putIfAbsent(dateKey, () => []).add(newEvent);
+                                    });
+                                  },
                                 ),
                               ),
                             );
-                          }).toList(),
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 1),
+                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 255, 238, 169),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              event.title,
+                              style: const TextStyle(fontSize: 8, color: Colors.black),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     ),
                   );
                 } else {
@@ -235,43 +208,45 @@ class _CalendarScreenState extends State<CalendarScreen> {
               },
             ),
             onDaySelected: (selectedDay, focusedDay) {
-              setState(() {
-                this.selectedDay = selectedDay;
-              });
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (context) => EventDetailScreen(
-                        selectedDate: getDateOnly(selectedDay),
-                        events: _getEventsForDay(selectedDay),
-                        onEventAdded: (newEvent) {
-                          setState(() {
-                            final eventDate = getDateOnly(selectedDay);
-                            events
-                                .putIfAbsent(eventDate, () => [])
-                                .add(newEvent);
-                          });
-                        },
-                      ),
-                ),
-              );
+              DateTime now = DateTime.now();
+              if (_lastClickedDay != null &&
+                  isSameDay(_lastClickedDay!, selectedDay) &&
+                  _lastClickedTime != null &&
+                  now.difference(_lastClickedTime!).inMilliseconds < 400) {
+                // 더블클릭 감지: 일정 상세로 이동
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EventDetailScreen(
+                      selectedDate: getDateOnly(selectedDay),
+                      events: _getEventsForDay(selectedDay),
+                      onEventAdded: (newEvent) {
+                        setState(() {
+                          final dateKey = getDateOnly(selectedDay);
+                          events.putIfAbsent(dateKey, () => []).add(newEvent);
+                        });
+                      },
+                    ),
+                  ),
+                );
+              } else {
+                // 한 번 클릭: 날짜 선택만
+                setState(() {
+                  this.selectedDay = selectedDay;
+                });
+              }
+              _lastClickedDay = selectedDay;
+              _lastClickedTime = now;
             },
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 8.0,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder:
-                        (context) =>
-                            AnswerScreen(question: todayQuestion ?? '질문 없음'),
+                    builder: (context) => AnswerScreen(question: todayQuestion ?? '질문 없음'),
                   ),
                 );
               },
@@ -293,40 +268,32 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      '오늘의 질문',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    const Text('오늘의 질문', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
                     isLoadingQuestion
                         ? const CircularProgressIndicator()
                         : Text(
-                          todayQuestion ?? '질문 없음',
-                          style: const TextStyle(fontSize: 14),
-                          textAlign: TextAlign.left,
-                        ),
+                            todayQuestion ?? '질문 없음',
+                            style: const TextStyle(fontSize: 14),
+                            textAlign: TextAlign.left,
+                          ),
                   ],
                 ),
               ),
             ),
           ),
-
           const SizedBox(height: 10),
           Expanded(
             child: ListView(
-              children:
-                  _getEventsForDay(selectedDay).map((event) {
-                    return ListTile(
-                      title: Text(event.title),
-                      subtitle: Text(
-                        '${event.startTime.hour.toString().padLeft(2, '0')}:${event.startTime.minute.toString().padLeft(2, '0')} - '
-                        '${event.endTime.hour.toString().padLeft(2, '0')}:${event.endTime.minute.toString().padLeft(2, '0')}',
-                      ),
-                    );
-                  }).toList(),
+              children: _getEventsForDay(selectedDay).map((event) {
+                return ListTile(
+                  title: Text(event.title),
+                  subtitle: Text(
+                    '${event.startTime.hour.toString().padLeft(2, '0')}:${event.startTime.minute.toString().padLeft(2, '0')} - '
+                    '${event.endTime.hour.toString().padLeft(2, '0')}:${event.endTime.minute.toString().padLeft(2, '0')}',
+                  ),
+                );
+              }).toList(),
             ),
           ),
         ],
