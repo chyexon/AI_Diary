@@ -4,7 +4,6 @@ calendar_screen.dart
 detail_screen.dart
 font_setting_screen.dart
 graph_screen.dart
-profile_input_screen.dart
 splash_screen.dart 추가
 
 lib
