@@ -317,7 +317,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           children: [
             // 꼬리 먼저
             Positioned(
-              top: 30,   // 필요에 따라 조정
+              top: 18,   // 필요에 따라 조정
               left: -15, // 말풍선 바깥으로 튀어나가게
               child: CustomPaint(
                 size: const Size(30, 20),
