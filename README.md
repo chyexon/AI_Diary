@@ -70,8 +70,10 @@ AI 기반 감정 분석 일기 앱은 사용자의 일기를 분석하여 감정
 ###  AI Backend  
 <img src="./chatgpt.png" width="60"/>
 
-###  개발 환경  
+### External API
+<img src="./youtube.png" width="60"/>
 
+###  개발 환경  
 <img src="./vscode.png" width="60"/>
 
 ## ⚙ 설치 및 실행 방법
