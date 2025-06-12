@@ -190,6 +190,14 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
+                    Positioned(
+                    top: 125,
+                    right: -20,
+                    child: CustomPaint(
+                      size: const Size(30, 20),
+                      painter: BubbleTailPainter(),
+                    ),
+                  ),
                   Container(
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
@@ -256,14 +264,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       ],
                     ),
                   ),
-                  Positioned(
-                    top: 125,
-                    right: -20,
-                    child: CustomPaint(
-                      size: const Size(30, 20),
-                      painter: BubbleTailPainter(),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -317,8 +317,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           children: [
             // 꼬리 먼저
             Positioned(
-              top: 40,   // 필요에 따라 조정
-              left: -20, // 말풍선 바깥으로 튀어나가게
+              top: 30,   // 필요에 따라 조정
+              left: -15, // 말풍선 바깥으로 튀어나가게
               child: CustomPaint(
                 size: const Size(30, 20),
                 painter: LeftSideTailPainter(),
@@ -388,13 +388,18 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 class BubbleTailPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = const Color(0xFFE6F8D5); ;
+    final paint = Paint()..color = const Color(0xFFE6F8D5);
+      final outlinePaint = Paint()
+      ..color = const Color.fromARGB(255, 178, 223, 138)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
     final path = Path()
       ..moveTo(0, 0)
       ..lineTo(size.width, size.height / 2)
       ..lineTo(0, size.height)
       ..close();
     canvas.drawPath(path, paint);
+    canvas.drawPath(path, outlinePaint);
   }
 
   @override
@@ -404,17 +409,30 @@ class BubbleTailPainter extends CustomPainter {
 class LeftSideTailPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = const Color.fromARGB(255, 255, 255, 230);
+    final shadowPaint = Paint()
+      ..color = Colors.black12
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 4); // 그림자 효과
 
-    final path = Path()
-      ..moveTo(size.width, 0)
-      ..lineTo(0, size.height / 2)
-      ..lineTo(size.width, size.height)
-      ..close();
+    final borderPaint = Paint()
+      ..color = Color.fromARGB(255, 255, 255, 230) // 말풍선 배경색과 동일
+      ..style = PaintingStyle.fill;
 
-    canvas.drawPath(path, paint);
+    final path = Path();
+    path.moveTo(size.width, 0);
+    path.lineTo(0, size.height / 2);
+    path.lineTo(size.width, size.height);
+    path.close();
+
+    // 그림자 먼저 그리기 (약간 이동해서 효과처럼 보이게)
+    canvas.save();
+    canvas.translate(1, 2); // 그림자 위치 조정
+    canvas.drawPath(path, shadowPaint);
+    canvas.restore();
+
+    // 꼬리 본체
+    canvas.drawPath(path, borderPaint);
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
