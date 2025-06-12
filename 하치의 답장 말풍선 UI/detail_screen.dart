@@ -56,8 +56,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
     if (base64List != null) {
       setState(() {
-        _selectedImageList =
-            base64List.map((b64) => base64Decode(b64)).toList();
+        _selectedImageList = base64List.map((b64) => base64Decode(b64)).toList();
       });
     }
   }
@@ -74,18 +73,14 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     String key = widget.selectedDate.toIso8601String();
 
     final apiService = ApiService();
-    final Map<String, dynamic> result = await apiService.getGPTResponse(
-      input,
-      widget.selectedDate,
-    );
+    final Map<String, dynamic> result = await apiService.getGPTResponse(input, widget.selectedDate);
     final gptReply = result['response'] ?? '';
 
     await prefs.setString('${key}_diary', input);
     await prefs.setString('${key}_gpt', gptReply);
 
     if (_selectedImageList.isNotEmpty) {
-      List<String> base64List =
-          _selectedImageList.map((bytes) => base64Encode(bytes)).toList();
+      List<String> base64List = _selectedImageList.map((bytes) => base64Encode(bytes)).toList();
       await prefs.setStringList('${key}_image_list', base64List);
     }
 
@@ -93,9 +88,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
       _gptResponse = gptReply;
     });
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('일기와 답변이 저장되었어요!')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('일기와 답변이 저장되었어요!')),
+    );
   }
 
   Future<void> _pickImage() async {
@@ -108,10 +103,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     if (result != null) {
       setState(() {
         _selectedImageList.addAll(
-          result.files
-              .where((file) => file.bytes != null)
-              .map((file) => file.bytes!)
-              .toList(),
+          result.files.where((file) => file.bytes != null).map((file) => file.bytes!).toList(),
         );
       });
     }
@@ -120,13 +112,12 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   void _showFullImage(Uint8List imageBytes) {
     showDialog(
       context: context,
-      builder:
-          (_) => Dialog(
-            child: GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: InteractiveViewer(child: Image.memory(imageBytes)),
-            ),
-          ),
+      builder: (_) => Dialog(
+        child: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: InteractiveViewer(child: Image.memory(imageBytes)),
+        ),
+      ),
     );
   }
 
@@ -165,13 +156,12 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     return match?.group(0);
   }
 
-  // 🔥 추천 음악 링크 열기 메서드 추가 🔥
   Future<void> _launchYouTubeLink(String url) async {
     final uri = Uri.parse(Uri.encodeFull(url));
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('링크를 열 수 없습니다')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('링크를 열 수 없습니다')),
+      );
     }
   }
 
@@ -181,54 +171,48 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          '${widget.selectedDate.month}월 ${widget.selectedDate.day}일',
-        ),
+        title: Text('${widget.selectedDate.month}월 ${widget.selectedDate.day}일'),
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(
-                left: 16.0,
-                top: 16.0,
-                bottom: 8.0,
-              ),
+              padding: const EdgeInsets.only(left: 16.0, top: 16.0, bottom: 8.0),
               child: ElevatedButton(
                 onPressed: _navigateToAddEvent,
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: const Color(0xFF689F38),
-                ),
+                style: ElevatedButton.styleFrom(foregroundColor: const Color(0xFF689F38)),
                 child: const Text('일정 추가'),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Container(
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE6F8D5),
-                  borderRadius: BorderRadius.circular(16.0),
-                  border: Border.all(color: Color(0xFFB2DF8A)),
-                ),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: _diaryController,
-                      maxLines: 6,
-                      readOnly: _isDiarySaved,
-                      decoration: const InputDecoration.collapsed(
-                        hintText: '오늘 무슨 일이 있었나요?',
-                      ),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE6F8D5),
+                      borderRadius: BorderRadius.circular(16.0),
+                      border: Border.all(color: Color(0xFFB2DF8A)),
                     ),
-                    const SizedBox(height: 10),
-                    if (_selectedImageList.isNotEmpty)
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children:
-                              _selectedImageList.asMap().entries.map((entry) {
+                    child: Column(
+                      children: [
+                        TextField(
+                          controller: _diaryController,
+                          maxLines: 6,
+                          readOnly: _isDiarySaved,
+                          decoration: const InputDecoration.collapsed(
+                            hintText: '오늘 무슨 일이 있었나요?',
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        if (_selectedImageList.isNotEmpty)
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: _selectedImageList.asMap().entries.map((entry) {
                                 int index = entry.key;
                                 Uint8List imageBytes = entry.value;
                                 return Padding(
@@ -238,9 +222,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                     child: Stack(
                                       children: [
                                         ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            12.0,
-                                          ),
+                                          borderRadius: BorderRadius.circular(12.0),
                                           child: Image.memory(
                                             imageBytes,
                                             width: 120,
@@ -254,19 +236,13 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                           child: GestureDetector(
                                             onTap: () {
                                               setState(() {
-                                                _selectedImageList.removeAt(
-                                                  index,
-                                                );
+                                                _selectedImageList.removeAt(index);
                                               });
                                             },
                                             child: CircleAvatar(
                                               radius: 12,
                                               backgroundColor: Colors.black54,
-                                              child: const Icon(
-                                                Icons.close,
-                                                color: Colors.white,
-                                                size: 16,
-                                              ),
+                                              child: const Icon(Icons.close, color: Colors.white, size: 16),
                                             ),
                                           ),
                                         ),
@@ -275,10 +251,20 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                   ),
                                 );
                               }).toList(),
-                        ),
-                      ),
-                  ],
-                ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: 125,
+                    right: -20,
+                    child: CustomPaint(
+                      size: const Size(30, 20),
+                      painter: BubbleTailPainter(),
+                    ),
+                  ),
+                ],
               ),
             ),
             Padding(
@@ -293,14 +279,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       onTap: _isDiarySaved ? null : _pickImage,
                       borderRadius: BorderRadius.circular(24),
                       child: CircleAvatar(
-                        backgroundColor:
-                            _isDiarySaved
-                                ? Colors.grey.shade300
-                                : Colors.grey.shade200,
-                        child: Icon(
-                          Icons.add_a_photo,
-                          color: _isDiarySaved ? Colors.grey : Colors.black87,
-                        ),
+                        backgroundColor: _isDiarySaved ? Colors.grey.shade300 : Colors.grey.shade200,
+                        child: Icon(Icons.add_a_photo, color: _isDiarySaved ? Colors.grey : Colors.black87),
                       ),
                     ),
                   ),
@@ -310,17 +290,15 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFDCEFB8),
                       foregroundColor: const Color(0xFF33691E),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.0),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
                     ),
                     child: const Text('저장'),
                   ),
                 ],
               ),
             ),
-if (_gptResponse.isNotEmpty)
-Padding(
+            if (_gptResponse.isNotEmpty)
+              Padding(
   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
   child: Row(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -334,50 +312,65 @@ Padding(
         ),
       ),
       Expanded(
-        child: Container(
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 4,
-                offset: Offset(0, 2),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // 꼬리 먼저
+            Positioned(
+              top: 40,   // 필요에 따라 조정
+              left: -20, // 말풍선 바깥으로 튀어나가게
+              child: CustomPaint(
+                size: const Size(30, 20),
+                painter: LeftSideTailPainter(),
               ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '하치의 답장:\n' +
-                    _gptResponse
-                        .replaceAll(
-                          RegExp(r'https:\/\/www\.youtube\.com\/watch\?v=[\w-]+'),
-                          '',
-                        )
-                        .replaceAllMapped(
-                          RegExp(r'\[\s*([^\]]+?)\s*\]\(\s*\)'),
-                          (match) => match.group(1) ?? '',
-                        ),
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 12),
-              if (youTubeUrl != null)
-                GestureDetector(
-                  onTap: () => _launchYouTubeLink(youTubeUrl),
-                  child: const Text(
-                    '[추천 음악 듣기]',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline,
+            ),
+            // 말풍선 본체
+            Padding(
+              padding: const EdgeInsets.only(left: 10), // 꼬리와 글자 겹침 방지
+              child: Container(
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 255, 255, 230),
+                  borderRadius: BorderRadius.circular(12.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
                     ),
-                  ),
+                  ],
                 ),
-            ],
-          ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '하치의 답장:\n' +
+                          _gptResponse
+                              .replaceAll(RegExp(r'https:\/\/www\.youtube\.com\/watch\?v=[\w-]+'), '')
+                              .replaceAllMapped(
+                                RegExp(r'\[\s*([^\]]+?)\s*\]\(\s*\)'),
+                                (match) => match.group(1) ?? '',
+                              ),
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 12),
+                    if (youTubeUrl != null)
+                      GestureDetector(
+                        onTap: () => _launchYouTubeLink(youTubeUrl),
+                        child: const Text(
+                          '[추천 음악 듣기]',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     ],
@@ -390,4 +383,38 @@ Padding(
       ),
     );
   }
+}
+
+class BubbleTailPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = const Color(0xFFE6F8D5); ;
+    final path = Path()
+      ..moveTo(0, 0)
+      ..lineTo(size.width, size.height / 2)
+      ..lineTo(0, size.height)
+      ..close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class LeftSideTailPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = const Color.fromARGB(255, 255, 255, 230);
+
+    final path = Path()
+      ..moveTo(size.width, 0)
+      ..lineTo(0, size.height / 2)
+      ..lineTo(size.width, size.height)
+      ..close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
