@@ -44,28 +44,30 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     _loadDiary();
   }
 
-  Future<void> _loadDiary() async {
-    final prefs = await SharedPreferences.getInstance();
-    String key = widget.selectedDate.toIso8601String();
+ Future<void> _loadDiary() async {
+  final prefs = await SharedPreferences.getInstance();
+  String key = widget.selectedDate.toIso8601String();
 
-    String? savedDiary = prefs.getString('${key}_diary');
-    String? savedResponse = prefs.getString('${key}_gpt');
-    List<String>? base64List = prefs.getStringList('${key}_image_list');
+  String? savedDiary = prefs.getString('${key}_diary');
+  String? savedResponse = prefs.getString('${key}_gpt');
+  List<String>? base64List = prefs.getStringList('${key}_image_list');
+  String? savedVideoId = prefs.getString('${key}_youtubeVideoId');  // 추가
 
-    if (savedDiary != null) {
-      _diaryController.text = savedDiary;
-      setState(() {
-        _isDiarySaved = true;
-        _gptResponse = savedResponse ?? '';
-      });
-    }
-
-    if (base64List != null) {
-      setState(() {
-        _selectedImageList = base64List.map((b64) => base64Decode(b64)).toList();
-      });
-    }
+  if (savedDiary != null) {
+    _diaryController.text = savedDiary;
+    setState(() {
+      _isDiarySaved = true;
+      _gptResponse = savedResponse ?? '';
+      _youtubeVideoId = savedVideoId;  // 추가
+    });
   }
+
+  if (base64List != null) {
+    setState(() {
+      _selectedImageList = base64List.map((b64) => base64Decode(b64)).toList();
+    });
+  }
+}
 
 Future<void> _saveDiary() async {
   if (_diaryController.text.trim().isEmpty) return;
@@ -93,14 +95,11 @@ Future<void> _saveDiary() async {
   // 유튜브 검색 결과 받아오기
   try {
     final results = await searchYouTube(input);
-    print('유튜브 검색 결과: $results');
     if (results.isNotEmpty && results[0]['id'] != null) {
       setState(() {
         _youtubeVideoId = results[0]['id'];
-        print('유튜브 비디오 ID: $_youtubeVideoId');  // 여기에 print 추가
       });
-    } else {
-      print('유튜브 검색 결과가 없거나 id가 없습니다.');
+      await prefs.setString('${key}_youtubeVideoId', _youtubeVideoId!);  // 저장 추가
     }
   } catch (e) {
     print('유튜브 검색 에러: $e');
@@ -114,6 +113,7 @@ Future<void> _saveDiary() async {
     const SnackBar(content: Text('일기와 답변이 저장되었어요!')),
   );
 }
+
 
 
   Future<void> _pickImage() async {
