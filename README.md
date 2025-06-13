@@ -98,18 +98,34 @@ flutter_application_1/
 ├── build/
 ├── ios/
 ├── lib/
-│   ├── main.dart
 │   ├── screens/
 │   │   ├── calendar_screen.dart
-│   │   ├── diary_input_screen.dart
-│   │   └── profile_screen.dart
-│   ├── services/
-│   │   ├── emotion_analysis.dart
-│   │   └── gpt_api_service.dart
+│   │   ├── chatgpt.dart
+│   │   ├── daily_answer.dart
+│   │   ├── daily_question.dart
+│   │   ├── detail_screen.dart
+│   │   ├── diary_entry.dart
+│   │   ├── emotion_logic.dart
+│   │   ├── emotion_storage.dart
+│   │   ├── event.dart
+│   │   ├── event_add_screen.dart
+│   │   ├── event_edit.dart
+│   │   ├── font_setting_screen.dart
+│   │   ├── gpt_question.dart
+│   │   ├── gpt_screen.dart
+│   │   ├── graph_screen.dart
+│   │   ├── profile_edit_screen.dart
+│   │   ├── profile_input_screen.dart
+│   │   ├── setting_screen.dart
+│   │   ├── splash_screen.dart
+│   │   └── youtube_api.dart
+
+│   ├── models/
+│   │   └── user_profile.dart
+│
 │   ├── widgets/
-│   │   ├── custom_button.dart
-│   │   ├── diary_tile.dart
-│   │   └── emotion_chart.dart
+│   │   └── custom_dropdown_button.dart
+
 ├── test/
 │   └── widget_test.dart
 ├── .gitignore
