@@ -119,13 +119,10 @@ flutter_application_1/
 │   │   ├── setting_screen.dart
 │   │   ├── splash_screen.dart
 │   │   └── youtube_api.dart
-
 │   ├── models/
 │   │   └── user_profile.dart
-│
 │   ├── widgets/
 │   │   └── custom_dropdown_button.dart
-
 ├── test/
 │   └── widget_test.dart
 ├── .gitignore
